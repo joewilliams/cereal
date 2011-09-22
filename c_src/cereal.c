@@ -36,8 +36,6 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#define TtyOpen(TTY) ((TTY) != -1)
-
 static int
 load(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
 {
@@ -268,7 +266,7 @@ open_tty(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 
   ttyfd = open(ttyname, O_RDWR|O_NONBLOCK);
 
-  if (!TtyOpen(ttyfd))
+  if (ttyfd < 0)
     {
       return mk_error(env, "open");
     }
