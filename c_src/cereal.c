@@ -158,8 +158,8 @@ static ERL_NIF_TERM
 set_tty_speed(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
   int fd;
-  int new_ispeed;
-  int new_ospeed;
+  unsigned int new_ispeed;
+  unsigned int new_ospeed;
   struct termios ttymodes;
 
   if (enif_get_int(env, argv[0], &fd) < 1)
@@ -167,12 +167,12 @@ set_tty_speed(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
       return enif_make_badarg(env);
     }
 
-  if (enif_get_int(env, argv[1], &fd) < 1)
+  if (enif_get_uint(env, argv[1], &new_ispeed) < 1)
     {
       return enif_make_badarg(env);
     }
 
-  if (enif_get_int(env, argv[2], &fd) < 1)
+  if (enif_get_uint(env, argv[2], &new_ospeed) < 1)
     {
       return enif_make_badarg(env);
     }
