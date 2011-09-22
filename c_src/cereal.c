@@ -36,9 +36,15 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include <sys/types.h>
 #include <sys/stat.h>
 
+static ERL_NIF_TERM atom_ok;
+static ERL_NIF_TERM atom_error;
+
 static int
 load(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
 {
+  atom_ok = enif_make_atom(env, "ok");
+  atom_error = enif_make_atom(env, "error");
+
   return 0;
 }
 
@@ -76,7 +82,7 @@ mk_atom(ErlNifEnv* env, const char* atom)
 ERL_NIF_TERM
 mk_error(ErlNifEnv* env, const char* mesg)
 {
-  return enif_make_tuple(env, mk_atom(env, "error"), mk_atom(env, mesg));
+  return enif_make_tuple(env, atom_error, mk_atom(env, mesg));
 }
 
 /**********************************************************************
@@ -143,7 +149,7 @@ set_raw_tty_mode(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
       return mk_error(env, "tcsetattr");
     }
 
-  return mk_atom(env, "ok");
+  return atom_ok;
 }
 
 /**********************************************************************
@@ -199,7 +205,7 @@ set_tty_speed(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
       return mk_error(env, "tcsetattr");
     }
 
-  return mk_atom(env, "ok");
+  return atom_ok;
 }
 
 /**********************************************************************
@@ -244,7 +250,7 @@ set_tty_flow(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
       return mk_error(env, "tcsetattr");
     }
 
-  return mk_atom(env, "ok");
+  return atom_ok;
 }
 
 /**********************************************************************
