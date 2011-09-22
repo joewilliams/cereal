@@ -5,7 +5,7 @@
          set_tty_speed/3,
          set_tty_flow/2,
          open_tty/1,
-         test/0
+         test/1
         ]).
 
 -on_load(init/0).
@@ -22,9 +22,10 @@ set_tty_flow(_, _) ->
 open_tty(_) ->
     not_loaded(?LINE).
 
-test() ->
-    Fd = open_tty("/dev/ttys002"),
-    ok = erlang:open_port({fd, Fd, Fd}, [binary, stream]).
+test(Device) ->
+    Fd = open_tty(Device),
+    erlang:open_port({fd, Fd, Fd}, [binary, stream]),
+    set_raw_tty_mode(Fd).
 
 init() ->
     SoName = case code:priv_dir(cereal) of
