@@ -46,9 +46,9 @@ open_tty(_) ->
     not_loaded(?LINE).
 
 test(Device) ->
-    Fd = open_tty(Device),
-    erlang:open_port({fd, Fd, Fd}, [binary, stream]),
-    set_raw_tty_mode(Fd).
+    {ok, Fd} = open_tty(Device),
+    ok = set_raw_tty_mode(Fd),
+    erlang:open_port({fd, Fd, Fd}, [binary, stream]).
 
 init() ->
     SoName = case code:priv_dir(cereal) of

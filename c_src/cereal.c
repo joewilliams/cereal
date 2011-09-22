@@ -287,7 +287,8 @@ open_tty(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
       return mk_errno(env, errno);
     }
 
-  return enif_make_int(env, ttyfd);
+  return enif_make_tuple2(env, atom_ok,
+    enif_make_int(env, ttyfd));
 }
 
 static ErlNifFunc nif_funcs[] = {
