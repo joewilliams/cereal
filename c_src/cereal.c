@@ -29,6 +29,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <termios.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -291,8 +292,32 @@ open_tty(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
     enif_make_int(env, ttyfd));
 }
 
+/**********************************************************************
+ * Name: close_tty
+ *
+ * Desc: close the tty, return ok or errno
+ */
+static ERL_NIF_TERM
+close_tty(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
+{
+  int fd = -1;
+
+  if (enif_get_int(env, argv[0], &fd) < 1)
+    {
+      return enif_make_badarg(env);
+    }
+
+  if (close(fd) < 0)
+    {
+      return mk_errno(env, errno);
+    }
+
+  return atom_ok;
+}
+
 static ErlNifFunc nif_funcs[] = {
   {"open_tty", 1, open_tty},
+  {"close_tty", 1, close_tty},
   {"set_raw_tty_mode", 1, set_raw_tty_mode},
   {"set_tty_speed", 3, set_tty_speed},
   {"set_tty_flow", 2, set_tty_flow}

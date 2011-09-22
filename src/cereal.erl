@@ -28,6 +28,7 @@
          set_tty_speed/3,
          set_tty_flow/2,
          open_tty/1,
+         close_tty/1,
          test/1
         ]).
 
@@ -43,6 +44,9 @@ set_tty_flow(_, _) ->
     not_loaded(?LINE).
 
 open_tty(_) ->
+    not_loaded(?LINE).
+
+close_tty(_) ->
     not_loaded(?LINE).
 
 test(Device) ->
