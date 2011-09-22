@@ -24,6 +24,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 
 #include <erl_nif.h>
+#include <erl_driver.h>
 
 #include <string.h>
 #include <stdlib.h>
@@ -35,6 +36,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include <sys/param.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/errno.h>
 
 static ERL_NIF_TERM atom_ok;
 static ERL_NIF_TERM atom_error;
@@ -85,6 +87,14 @@ mk_error(ErlNifEnv* env, const char* mesg)
   return enif_make_tuple(env, atom_error, mk_atom(env, mesg));
 }
 
+static ERL_NIF_TERM
+mk_errno(ErlNifEnv *env, int errnum)
+{
+  return enif_make_tuple2(env, atom_error,
+    enif_make_atom(env, erl_errno_id(errnum)));
+}
+
+
 /**********************************************************************
  * Name: set_raw_tty_mode
  *
@@ -107,7 +117,7 @@ set_raw_tty_mode(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 
   if (tcgetattr(fd, &ttymodes) < 0)
     {
-      return mk_error(env, "tcgetattr");
+      return mk_errno(env, errno);
     }
 
   /* Configure for raw mode (see man termios) */
@@ -146,7 +156,7 @@ set_raw_tty_mode(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 
   if (tcsetattr(fd, TCSAFLUSH, &ttymodes) < 0)
     {
-      return mk_error(env, "tcsetattr");
+      return mk_errno(env, errno);
     }
 
   return atom_ok;
@@ -185,24 +195,24 @@ set_tty_speed(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 
   if (tcgetattr(fd,&ttymodes) < 0)
     {
-      return mk_error(env, "tcgetattr");
+      return mk_errno(env, errno);
     }
 
   if (cfsetispeed(&ttymodes,new_ispeed) < 0)
     {
-      return mk_error(env, "cfsetispeed");
+      return mk_errno(env, errno);
     }
 
   if (cfsetospeed(&ttymodes,new_ospeed) < 0)
     {
-      return mk_error(env, "cfsetospeed");
+      return mk_errno(env, errno);
     }
 
   /* Apply changes */
 
   if (tcsetattr(fd, TCSAFLUSH, &ttymodes) < 0)
     {
-      return mk_error(env, "tcsetattr");
+      return mk_errno(env, errno);
     }
 
   return atom_ok;
@@ -235,7 +245,7 @@ set_tty_flow(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 
   if (tcgetattr(fd,&ttymodes) < 0)
     {
-      return mk_error(env, "tcgetattr");
+      return mk_errno(env, errno);
     }
 
   if (enable)
@@ -247,7 +257,7 @@ set_tty_flow(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 
   if (tcsetattr(fd, TCSAFLUSH, &ttymodes) < 0)
     {
-      return mk_error(env, "tcsetattr");
+      return mk_errno(env, errno);
     }
 
   return atom_ok;
@@ -274,7 +284,7 @@ open_tty(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 
   if (ttyfd < 0)
     {
-      return mk_error(env, "open");
+      return mk_errno(env, errno);
     }
 
   return enif_make_int(env, ttyfd);
