@@ -154,7 +154,7 @@ set_raw_tty_mode(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 
   /* Apply changes */
 
-  if (tcsetattr(fd, TCSAFLUSH, &ttymodes) < 0)
+  if (tcsetattr(fd, TCSANOW, &ttymodes) < 0)
     {
       return mk_errno(env, errno);
     }
@@ -210,7 +210,7 @@ set_tty_speed(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 
   /* Apply changes */
 
-  if (tcsetattr(fd, TCSAFLUSH, &ttymodes) < 0)
+  if (tcsetattr(fd, TCSANOW, &ttymodes) < 0)
     {
       return mk_errno(env, errno);
     }
@@ -255,7 +255,7 @@ set_tty_flow(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 
   /* Apply changes */
 
-  if (tcsetattr(fd, TCSAFLUSH, &ttymodes) < 0)
+  if (tcsetattr(fd, TCSANOW, &ttymodes) < 0)
     {
       return mk_errno(env, errno);
     }
