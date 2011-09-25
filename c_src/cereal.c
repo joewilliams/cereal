@@ -37,7 +37,6 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include <sys/param.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <sys/errno.h>
 
 static ERL_NIF_TERM atom_ok;
 static ERL_NIF_TERM atom_error;
@@ -281,7 +280,7 @@ open_tty(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
       return enif_make_badarg(env);
     }
 
-  ttyfd = open(ttyname, O_RDWR|O_NONBLOCK);
+  ttyfd = open(ttyname, O_RDWR|O_NOCTTY|O_NONBLOCK);
 
   if (ttyfd < 0)
     {
