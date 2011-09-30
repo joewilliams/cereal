@@ -38,6 +38,10 @@ OTHER DEALINGS IN THE SOFTWARE.
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include "cereal.h"
+
+int lookup_speed(unsigned int speed, unsigned int *rate);
+
 static ERL_NIF_TERM atom_ok;
 static ERL_NIF_TERM atom_error;
 
@@ -171,22 +175,25 @@ set_raw_tty_mode(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 static ERL_NIF_TERM
 set_tty_speed(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
 {
-  int fd;
-  unsigned int new_ispeed;
-  unsigned int new_ospeed;
-  struct termios ttymodes;
+  int fd = -1;
+  unsigned int speed = 0;
+  unsigned int new_ispeed = 0;
+  unsigned int new_ospeed = 0;
+  struct termios ttymodes = {0};
 
   if (enif_get_int(env, argv[0], &fd) < 1)
     {
       return enif_make_badarg(env);
     }
 
-  if (enif_get_uint(env, argv[1], &new_ispeed) < 1)
+  if (enif_get_uint(env, argv[1], &speed) < 1 ||
+          lookup_speed(speed, &new_ispeed) < 0)
     {
       return enif_make_badarg(env);
     }
 
-  if (enif_get_uint(env, argv[2], &new_ospeed) < 1)
+  if (enif_get_uint(env, argv[2], &speed) < 1 ||
+          lookup_speed(speed, &new_ospeed) < 0)
     {
       return enif_make_badarg(env);
     }
@@ -216,6 +223,22 @@ set_tty_speed(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[])
     }
 
   return atom_ok;
+}
+
+
+int
+lookup_speed(unsigned int speed, unsigned int *rate)
+{
+    int i = 0;
+
+    for (i = 0; i < sizeof(speeds)/sizeof(struct cereal_speed); i++) {
+        if (speeds[i].speed == speed) {
+            *rate = speeds[i].rate;
+            return 0;
+        }
+    }
+
+    return -1;
 }
 
 /**********************************************************************
