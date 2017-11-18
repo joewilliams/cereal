@@ -1,3 +1,5 @@
 ebin/*
 priv/*
 */*.o
+/_build
+/.rebar3
